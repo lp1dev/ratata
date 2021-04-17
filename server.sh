@@ -10,7 +10,7 @@ if [ ! -d ssh_keys ];then
     ssh-keygen -P '' -f ssh_keys/$RAND_SUM
     echo "Installing new key"
     cat "ssh_keys/$RAND_SUM.pub" >> "$HOME/.ssh/authorized_keys"
-    
+    echo "<html><html>" >> ssh_keys/index.html
 fi
 
 cd ssh_keys && python3 -m http.server --bind $HOST $PORT
