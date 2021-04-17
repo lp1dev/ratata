@@ -13,4 +13,4 @@ if [ ! -d ssh_keys ];then
     
 fi
 
-python3 -m http.server --bind $HOST $PORT
+cd ssh_keys && python3 -m http.server --bind $HOST $PORT
